@@ -47,7 +47,7 @@ export default function Campers() {
         if (data && data.payload) {
           setCampInfo(data.payload);
         } else {
-          setError('Не удалось загрузить данные о лагере.');
+          setError('The camper data could not be loaded.');
         }
       } catch (error) {
         setError(error.message);

@@ -19,7 +19,6 @@ import * as Yup from 'yup';
 import { useDispatch, useSelector } from 'react-redux';
 import { changeBody, changeFilter, changeOption } from '../../redux/filters/slice';
 import { selectBodyTypes, selectFilterName, selectOptionFilters } from '../../redux/filters/selectors';
-import toast, { Toaster } from 'react-hot-toast';
 
 const locationId = nanoid();
 const equipmentValues = [
@@ -36,7 +35,7 @@ const bodyTypeValues = [
 ];
 
 const Schema = Yup.object().shape({
-  location: Yup.string().min(3, 'Too Short!').max(50, 'Too Long!'),
+  location: Yup.string(),
   equipment: Yup.object().shape({
     AC: Yup.boolean(),
     Automatic: Yup.boolean(),
@@ -58,101 +57,74 @@ export default function FilterForm() {
   const body = useSelector(selectBodyTypes);
 
   return (
-    <>
-      <Toaster
-        position="top-center"
-        reverseOrder={false}
-        gutter={8}
-        toastOptions={{
-          className: '',
-          duration: 5000,
-          style: {
-            background: '#363636',
-            color: '#fff',
-            zIndex: '9999999999',
-          },
-          success: {
-            duration: 3000,
-            theme: {
-              primary: 'red',
-              secondary: 'black',
-            },
-          },
-        }}
-      />
-      <Formik
-        initialValues={{
-          location: location,
-          equipment: equipment,
-          body: body,
-        }}
-        validationSchema={Schema}
-        onSubmit={(values, { resetForm }) => {
-          if (values.location.trim() === '') {
-            toast.error('Location is required');
-            return;
-          }
-          dispatch(changeFilter(values.location));
-          dispatch(changeOption(values.equipment));
-          dispatch(changeBody(values.body));
-          resetForm();
-        }}
-      >
-        <FormContainer as={Form}>
-          <LocationLabel htmlFor={locationId}>Location</LocationLabel>
-          <InputWrapper>
-            <IconMap>
-              <use xlinkHref={`${icons}#iconMap`}></use>
-            </IconMap>
-            <Field
-              as={LocationInput}
-              type="text"
-              name="location"
-              placeholder="City"
-              id={locationId}
-            />
-          </InputWrapper>
-          <SpanFilter>Filters</SpanFilter>
-          <LabelEquipment>Vehicle Equipment</LabelEquipment>
-          <CheckboxGroup>
-            {equipmentValues.map((obj) => (
-              <CheckboxLabel key={obj.name}>
-                <Field
-                  as={Checkbox}
-                  type="checkbox"
-                  name={`equipment.${obj.name}`}
-                />
-                <CustomCheckbox>
-                  <svg width="32" height="32">
-                    <use xlinkHref={`${icons}${obj.icon}`}></use>
-                  </svg>
-                  {obj.name}
-                </CustomCheckbox>
-              </CheckboxLabel>
-            ))}
-          </CheckboxGroup>
+    <Formik
+      initialValues={{
+        location: location,
+        equipment: equipment,
+        body: body,
+      }}
+      validationSchema={Schema}
+      onSubmit={(values, { resetForm }) => {
+        dispatch(changeFilter(values.location));
+        dispatch(changeOption(values.equipment));
+        dispatch(changeBody(values.body));
+        resetForm();
+      }}
+    >
+      <FormContainer as={Form}>
+        <LocationLabel htmlFor={locationId}>Location</LocationLabel>
+        <InputWrapper>
+          <IconMap>
+            <use xlinkHref={`${icons}#iconMap`}></use>
+          </IconMap>
+          <Field
+            as={LocationInput}
+            type="text"
+            name="location"
+            placeholder="City"
+            id={locationId}
+          />
+        </InputWrapper>
+        <SpanFilter>Filters</SpanFilter>
+        <LabelEquipment>Vehicle Equipment</LabelEquipment>
+        <CheckboxGroup>
+          {equipmentValues.map((obj) => (
+            <CheckboxLabel key={obj.name}>
+              <Field
+                as={Checkbox}
+                type="checkbox"
+                name={`equipment.${obj.name}`}
+              />
+              <CustomCheckbox>
+                <svg width="32" height="32">
+                  <use xlinkHref={`${icons}${obj.icon}`}></use>
+                </svg>
+                {obj.name}
+              </CustomCheckbox>
+            </CheckboxLabel>
+          ))}
+        </CheckboxGroup>
 
-          <LabelEquipment>Vehicle Body Type</LabelEquipment>
-          <CheckboxGroup>
-            {bodyTypeValues.map((obj) => (
-              <CheckboxLabel key={obj.name}>
-                <Field
-                  as={Checkbox}
-                  type="checkbox"
-                  name={`body.${obj.name}`}
-                />
-                <CustomCheckbox>
-                  <svg width="32" height="32">
-                    <use xlinkHref={`${icons}${obj.icon}`}></use>
-                  </svg>
-                  {obj.name}
-                </CustomCheckbox>
-              </CheckboxLabel>
-            ))}
-          </CheckboxGroup>
-          <SubmitButton type="submit">Submit</SubmitButton>
-        </FormContainer>
-      </Formik>
-    </>
+        <LabelEquipment>Vehicle Body Type</LabelEquipment>
+        <CheckboxGroup>
+          {bodyTypeValues.map((obj) => (
+            <CheckboxLabel key={obj.name}>
+              <Field
+                as={Checkbox}
+                type="checkbox"
+                name={`body.${obj.name}`}
+              />
+              <CustomCheckbox>
+                <svg width="32" height="32">
+                  <use xlinkHref={`${icons}${obj.icon}`}></use>
+                </svg>
+                {obj.name}
+              </CustomCheckbox>
+            </CheckboxLabel>
+          ))}
+        </CheckboxGroup>
+        <SubmitButton type="submit">Submit</SubmitButton>
+      </FormContainer>
+    </Formik>
   );
 }
